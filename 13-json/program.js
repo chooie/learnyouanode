@@ -6,7 +6,8 @@ var server = http.createServer(function(req, res) {
     pathName = urlObj.pathname,
     query = urlObj.query.iso,
     date,
-    responseObj;
+    responseObj,
+    jsonResponse;
 
   date = new Date(query);
 
@@ -16,16 +17,22 @@ var server = http.createServer(function(req, res) {
       minute: date.getMinutes(),
       second: date.getSeconds()
     };
-    res.end(JSON.stringify(responseObj))
+    jsonResponse = JSON.stringify(responseObj);
 
   } else if (pathName === '/api/unixtime') {
     responseObj = {
       unixtime: date.getTime()
     };
-    res.end(JSON.stringify(responseObj));
+    jsonResponse = JSON.stringify(responseObj);
   }
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
+  if (jsonResponse) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(jsonResponse);
+  } else {
+    res.writeHead(404);
+    res.end();
+  }
 });
 
 server.listen(process.argv[2]);
